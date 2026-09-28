@@ -1,4 +1,4 @@
-import { EMOTES, type Emote } from "./emotes";
+import type { Emote } from "./emotes";
 
 export function insertEmoteIntoChat(emote: Emote) {
   const inputRenderer = document.querySelector(

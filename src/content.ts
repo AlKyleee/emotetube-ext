@@ -1,6 +1,6 @@
 import { EMOTES, type Emote } from "./emotes";
 import { addEmoteTubePickerCategory } from "./category"
-import { createEmoteHoverPreview } from "./emoteHover";
+import { connectEmoteHover, createEmoteHoverPreview } from "./emoteHover";
 
 console.log("emotetube extension loaded!");
 
@@ -53,7 +53,7 @@ function replaceEmotes(message: HTMLElement) {
   const emoteHoverPreview = createEmoteHoverPreview();
 
   for (const textNode of textNodes) {
-    const text = textNode.textConte
+    const text = textNode.textContent;
 
     if (!text) {
       continue;
@@ -96,30 +96,7 @@ function replaceEmotes(message: HTMLElement) {
 
         const img = document.createElement("img");
 
-        img.addEventListener("mouseenter", () => {
-          const rect = img.getBoundingClientRect();
-
-          emoteHoverPreview.image.src = emote.url;
-          emoteHoverPreview.image.alt = emote.name;
-          emoteHoverPreview.name.textContent = emote.name;
-
-          emoteHoverPreview.preview.style.display = "flex";
-
-          emoteHoverPreview.preview.style.left = `${
-            rect.left + rect.width / 2
-          }px`;
-
-          emoteHoverPreview.preview.style.top = `${
-            rect.top - 8
-          }px`;
-
-          emoteHoverPreview.preview.style.transform =
-            "translate(-50%, -100%)";
-        });
-
-        img.addEventListener("mouseleave", () => {
-          emoteHoverPreview.preview.style.display = "none";
-        });
+        connectEmoteHover(img, emote, emoteHoverPreview);
 
         img.src = emote.url;
         img.alt = emote.name;

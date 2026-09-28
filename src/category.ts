@@ -1,6 +1,6 @@
-import { EMOTES, type Emote } from "./emotes";
+import { EMOTES } from "./emotes";
 import { insertEmoteIntoChat } from "./emoteInsert"
-import { createEmoteHoverPreview } from "./emoteHover";
+import { connectEmoteHover, createEmoteHoverPreview } from "./emoteHover";
 import { setupEmoteTubeSearch } from "./search"
 
 const emoteHoverPreview = createEmoteHoverPreview();
@@ -123,30 +123,7 @@ export function addEmoteTubePickerCategory() {
         }
       );
 
-      img.addEventListener("mouseenter", () => {
-        const rect = img.getBoundingClientRect();
-
-        emoteHoverPreview.image.src = emote.url;
-        emoteHoverPreview.image.alt = emote.name;
-        emoteHoverPreview.name.textContent = emote.name;
-
-        emoteHoverPreview.preview.style.display = "flex";
-
-        emoteHoverPreview.preview.style.left = `${
-        rect.left + rect.width / 2
-        }px`;
-
-        emoteHoverPreview.preview.style.top = `${
-        rect.top - 8
-        }px`;
-
-        emoteHoverPreview.preview.style.transform =
-        "translate(-50%, -100%)";
-      });
-
-      img.addEventListener("mouseleave", () => {
-        emoteHoverPreview.preview.style.display = "none";
-      });
+      connectEmoteHover(img, emote, emoteHoverPreview);
 
       img.addEventListener("click", () => {
         insertEmoteIntoChat(emote);

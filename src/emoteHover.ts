@@ -1,3 +1,5 @@
+import type { Emote } from "./emotes";
+
 export function createEmoteHoverPreview() {
     const preview = document.createElement("div");
 
@@ -39,4 +41,29 @@ export function createEmoteHoverPreview() {
         image,
         name,
     };
+}
+
+export function connectEmoteHover(
+    image: HTMLImageElement,
+    emote: Emote,
+    emoteHoverPreview: ReturnType<typeof createEmoteHoverPreview>
+) {
+    image.addEventListener("mouseenter", () => {
+        const rect = image.getBoundingClientRect();
+
+        emoteHoverPreview.image.src = emote.url;
+        emoteHoverPreview.image.alt = emote.name;
+        emoteHoverPreview.name.textContent = emote.name;
+
+        emoteHoverPreview.preview.style.display = "flex";
+        emoteHoverPreview.preview.style.left = `${
+            rect.left + rect.width / 2
+        }px`;
+        emoteHoverPreview.preview.style.top = `${rect.top - 8}px`;
+        emoteHoverPreview.preview.style.transform = "translate(-50%, -100%)";
+    });
+
+    image.addEventListener("mouseleave", () => {
+        emoteHoverPreview.preview.style.display = "none";
+    });
 }
