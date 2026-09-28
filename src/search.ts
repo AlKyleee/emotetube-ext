@@ -5,36 +5,73 @@ export function setupEmoteTubeSearch(category: HTMLElement) {
     return;
   }
 
-  const searchInput = searchPanel.querySelector("input");
+  const youtubeSearchInput = searchPanel.querySelector("input");
 
-  if (!(searchInput instanceof HTMLInputElement)) {
+  if (!(youtubeSearchInput instanceof HTMLInputElement)) {
     return;
   }
 
-  searchInput.addEventListener("input", () => {
+  const searchInput = youtubeSearchInput.cloneNode(false) as HTMLInputElement;
+  searchInput.value = "";
+  searchInput.placeholder = "Search EmoteTube";
+  searchInput.dataset.emotetubeSearch = "true";
+  youtubeSearchInput.replaceWith(searchInput);
+
+  document.addEventListener("input", (event) => {
+    if (event.target !== searchInput) {
+      return;
+    }
+
+    event.stopImmediatePropagation();
+
     const query = searchInput.value.toLowerCase().trim();
     console.log("Search:", query);
 
-    // Keep the EmoteTube category visible
-    category.style.display = "";
+    const categories = category.closest("#categories");
 
-    const emotes = category.querySelectorAll(
-      "[data-emotetube-emote]"
+    if (!(categories instanceof HTMLElement)) {
+      return;
+    }
+
+    const categoriesWrapper = document.querySelector(
+      "#categories-wrapper"
     );
 
-    emotes.forEach((emote) => {
-      if (!(emote instanceof HTMLElement)) {
-        return;
-      }
+    if (categoriesWrapper instanceof HTMLElement) {
+      categoriesWrapper.style.display = query === "" ? "" : "block";
+      categoriesWrapper.style.overflowY = query === "" ? "" : "auto";
+    }
 
-      const name = (
-        emote.getAttribute("aria-label") ?? ""
-      ).toLowerCase();
+    categories
+      .querySelectorAll<HTMLElement>(
+        ":scope > yt-emoji-picker-category-renderer"
+      )
+      .forEach((pickerCategory) => {
+        let displayedEmotes = 0;
 
-      emote.style.display =
-        query === "" || name.includes(query)
-          ? ""
-          : "none";
-    });
-  });
+        pickerCategory
+          .querySelectorAll("#emoji img[aria-label]")
+          .forEach((emote) => {
+            if (!(emote instanceof HTMLElement)) {
+              return;
+            }
+
+            const name = (
+              emote.getAttribute("aria-label") ?? ""
+            ).toLowerCase();
+
+            const matches = query === "" || name.includes(query);
+            emote.style.display = matches ? "" : "none";
+
+            if (matches) {
+              displayedEmotes += 1;
+            }
+          });
+
+        pickerCategory.style.display =
+          query === "" || displayedEmotes > 0
+            ? ""
+            : "none";
+      });
+  }, true);
 }
