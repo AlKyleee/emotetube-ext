@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "EmoteTube",
+  "version": "0.1.0",
+  "description": "Custom emotes for YouTube Live Chat",
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/watch*",
+        "https://www.youtube.com/live_chat*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "emotes/*"
+      ],
+      "matches": [
+        "https://www.youtube.com/*"
+      ]
+    }
+  ]
+}
