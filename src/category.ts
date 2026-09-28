@@ -123,6 +123,10 @@ export function addEmoteTubePickerCategory() {
         }
       );
 
+      img.addEventListener("mousedown", (event) => {
+        event.stopPropagation();
+      });
+
       connectEmoteHover(img, emote, emoteHoverPreview);
 
       img.addEventListener("click", () => {
