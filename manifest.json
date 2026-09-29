@@ -4,6 +4,14 @@
   "version": "0.1.0",
   "description": "Custom emotes for YouTube Live Chat",
 
+  "host_permissions": [
+    "https://www.emotetube.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
   "content_scripts": [
     {
       "matches": [

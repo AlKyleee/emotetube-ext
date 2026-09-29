@@ -148,8 +148,4 @@ export function addEmoteTubePickerCategory() {
 
   // Put EmoteTube BEFORE YouTube
   youtubeCategory.before(category);
-
-  console.log(
-    `EmoteTube: picker category added with ${EMOTES.length} emotes!`
-  );
 }

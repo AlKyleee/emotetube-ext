@@ -1,9 +1,6 @@
-import { EMOTES, type Emote } from "./emotes";
+import { EMOTES, loadEmotes, type Emote } from "./emotes";
 import { addEmoteTubePickerCategory } from "./category"
 import { connectEmoteHover, createEmoteHoverPreview } from "./emoteHover";
-
-console.log("emotetube extension loaded!");
-
 
 function escapeRegex(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -20,7 +17,7 @@ function createEmoteRegex(emotes: Emote[]): RegExp {
   );
 }
 
-const EMOTE_REGEX = createEmoteRegex(EMOTES);
+let EMOTE_REGEX: RegExp;
 
 function replaceEmotes(message: HTMLElement) {
   const messageContainer = message.querySelector("#message");
@@ -162,57 +159,62 @@ function processElement(element: HTMLElement) {
   });
 }
 
+void loadEmotes()
+  .then(() => {
+    EMOTE_REGEX = createEmoteRegex(EMOTES);
+      addEmoteTubePickerCategory();
 
+    // Process existing messages
+    document
+      .querySelectorAll("yt-live-chat-text-message-renderer")
+      .forEach((message) => {
+        processMessage(message as HTMLElement);
+      });
 
+    // Watch the chat for changes
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        // New elements
+        for (const node of mutation.addedNodes) {
+          if (node instanceof HTMLElement) {
+            processElement(node);
+          }
+        }
 
-// Process existing messages
-document
-  .querySelectorAll("yt-live-chat-text-message-renderer")
-  .forEach((message) => {
-    processMessage(message as HTMLElement);
+        // Existing elements whose contents changed
+        if (mutation.type === "childList" && mutation.target instanceof Element) 
+        {
+          const message = mutation.target.closest("yt-live-chat-text-message-renderer");
+
+          if (message instanceof HTMLElement) {
+            processMessage(message);
+          }
+        }
+
+        // Elements whose children changed
+        if (
+          mutation.type === "childList" &&
+          mutation.target instanceof HTMLElement
+        ) {
+          const message = mutation.target.closest(
+            "yt-live-chat-text-message-renderer"
+          );
+
+          if (message instanceof HTMLElement) {
+            processMessage(message);
+          }
+        }
+      }
+      addEmoteTubePickerCategory();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+  })
+  .catch((error: unknown) => {
+    console.error("EmoteTube initialization failed.", error);
   });
-
-// Watch the chat for changes
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    // New elements
-    for (const node of mutation.addedNodes) {
-      if (node instanceof HTMLElement) {
-        processElement(node);
-      }
-    }
-
-    // Existing elements whose contents changed
-    if (mutation.type === "childList" && mutation.target instanceof Element) 
-    {
-      const message = mutation.target.closest("yt-live-chat-text-message-renderer");
-
-      if (message instanceof HTMLElement) {
-        processMessage(message);
-      }
-    }
-
-    // Elements whose children changed
-    if (
-      mutation.type === "childList" &&
-      mutation.target instanceof HTMLElement
-    ) {
-      const message = mutation.target.closest(
-        "yt-live-chat-text-message-renderer"
-      );
-
-      if (message instanceof HTMLElement) {
-        processMessage(message);
-      }
-    }
-  }
-  addEmoteTubePickerCategory();
-});
-
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-  characterData: true,
-});
-
-console.log("emotetube is watching Live Chat!");

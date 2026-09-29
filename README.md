@@ -12,6 +12,7 @@ EmoteTube is a Chrome extension that adds EmoteTube emotes to the YouTube Live C
 - Clicking an emote inserts its name into the chatbox.
 - Adds a space after inserted emote names.
 - Replaces matching emote names in chat messages with the corresponding emote image.
+- Loads the current emote list from `https://www.emotetube.com/api/emotes` and uses the CDN URLs returned by the API.
 - Emote matching is case-sensitive and uses whole-word/token matching.
 - Shows a larger emote preview and emote name when hovering over an EmoteTube emote.
 - Uses a `MutationObserver` to handle YouTube's dynamically changing Live Chat DOM.
@@ -62,7 +63,7 @@ Responsible for:
 
 ### `emotes.ts`
 
-Contains the EmoteTube emote definitions.
+`emotes.ts` requests and validates emote records supplied by the extension service worker.
 
 Example:
 
@@ -108,6 +109,8 @@ The initial global emotes are:
 - `waga`
 - `WAJUJU`
 - `xdd`
+The API controls the available global emotes and their CDN image URLs.
+The API at `https://www.emotetube.com/api/emotes` must be available when the extension loads.
 
 More emotes will be added later.
 

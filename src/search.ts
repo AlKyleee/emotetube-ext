@@ -13,9 +13,33 @@ export function setupEmoteTubeSearch(category: HTMLElement) {
 
   const searchInput = youtubeSearchInput.cloneNode(false) as HTMLInputElement;
   searchInput.value = "";
-  searchInput.placeholder = "Search EmoteTube";
+  searchInput.placeholder = "Search Emotes";
   searchInput.dataset.emotetubeSearch = "true";
   youtubeSearchInput.replaceWith(searchInput);
+
+  document.addEventListener("mouseover", (event) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const emote = event.target.closest(
+      "#categories #emoji img[aria-label]"
+    );
+    const name = emote?.getAttribute("aria-label");
+
+    if (name) {
+      searchInput.placeholder = name;
+    }
+  }, true);
+
+  document.addEventListener("mouseout", (event) => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest("#categories #emoji img[aria-label]")
+    ) {
+      searchInput.placeholder = "Search Emotes";
+    }
+  }, true);
 
   document.addEventListener("input", (event) => {
     if (event.target !== searchInput) {
@@ -25,7 +49,6 @@ export function setupEmoteTubeSearch(category: HTMLElement) {
     event.stopImmediatePropagation();
 
     const query = searchInput.value.toLowerCase().trim();
-    console.log("Search:", query);
 
     const categories = category.closest("#categories");
 
